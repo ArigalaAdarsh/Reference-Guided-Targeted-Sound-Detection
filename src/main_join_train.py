@@ -337,7 +337,7 @@ class Runner(object):
                                   map_location=lambda storage, loc: storage)
         # Dummy to calculate the pooling factor a bit dynamic
         config_parameters = utils.parse_config_or_kwargs(config, **kwargs) # parse the config file and store it in config_parameters dictionary
-        model = getattr(models, config_param['model'])(model_config=config_parameters,inputdim=64,
+        model = getattr(models, config_param['model'])(model_config=config_parameters,inputdim=224,
                         outputdim=2, load_pretrained = False, **config_param['model_args'])   # it instantiates the model, getattr(models, config_param['model']) will return the model class 
         model.load_state_dict(model_parameters)
         model.to(DEVICE)
