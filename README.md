@@ -11,7 +11,7 @@ Note: Pretrained model weights will be released later to reproduce the results.
 
 #  Download Pre-trained Weights
 
-1. Download the pre-trained weights from [Google Drive](#).  
+1. Download the pre-trained weights from [Google Drive](https://drive.google.com/drive/folders/1NFP8jmXInKQOrN1RLM7k9l-pXm2U-9cd).  
 2. Place the downloaded weights into the following directory:
 
    ```bash
