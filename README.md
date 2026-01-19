@@ -1,4 +1,4 @@
-# REFERENCE-GUIDED TARGETED SOUND DETECTION USING A UNIFIED ENCODER (ICASSP 2026 Submission)
+# SHARED REPRESENTATION LEARNING FOR REFERENCE-GUIDED TARGETED SOUND DETECTION (ICASSP 2026 ACCEPTED)
 
 This repository provides the **official implementation** of our unified encoder model for **Target Sound Detection (TSD)**, submitted to **ICASSP 2026**.  
 It includes training and evaluation for the **URBAN-SED** and **URBAN*8K** datasets.  
