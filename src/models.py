@@ -69,13 +69,54 @@ class Fusion(nn.Module):
         as_embs = self.avg_pool(as_embs) 
         return as_embs
     
+                
+class FiLMFusion(nn.Module):
+    def __init__(self, inputdim, n_fac):
+        super().__init__()
+        self.n_fac = n_fac
 
+        # Predict gamma and beta from embedding
+        self.gamma_layer = conv1d(inputdim, inputdim * n_fac, 1)
+        self.beta_layer  = conv1d(inputdim, inputdim * n_fac, 1)
+
+        # Project mix features
+        self.mix_proj = conv1d(inputdim, inputdim * n_fac, 1)
+
+        self.avg_pool = nn.AvgPool1d(n_fac, stride=n_fac)
+
+    def forward(self, embedding, mix_embed):
+        # embedding: [B, T, C]
+        # mix_embed: [B, T, C]
+
+        embedding = embedding.permute(0, 2, 1)
+        mix_embed = mix_embed.permute(0, 2, 1)
+
+        gamma = self.gamma_layer(embedding)  # [B, C*n_fac, T]
+        beta  = self.beta_layer(embedding)
+        mix   = self.mix_proj(mix_embed)
+
+        # FiLM modulation
+
+        out = gamma * mix + beta
+
+        B, Cn, T = out.shape              # Cn = 768 * n_fac
+        C = Cn // self.n_fac              # 768
+
+        out = out.view(B, C, self.n_fac, T)  # (B, 768, 4, T)
+        out = out.mean(dim=2)                # (B, 768, T)
+
+        # now permute for GRU
+        out = out.permute(0, 2, 1)           # (B, T, 768)
+        #print(f'{out.shape=}')
+        return out
+                
 class CDur_fusion(nn.Module):
     def __init__(self, inputdim, outputdim, **kwargs):
         super().__init__()
       
         self.gru = nn.GRU(768, 768, bidirectional=True, batch_first=True)  #768 multiplication  #1536 for concatenation
         self.fusion = Fusion(768,4) #768 for convnext
+        #self.fusion = FiLMFusion(768, 4) # This is for FilM Based Fusion
         self.fc = nn.Linear(1536,1536)  #  Birdirectional GRU (786*2)
         
         self.outputlayer = nn.Linear(1536, outputdim)
